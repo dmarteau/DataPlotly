@@ -11,10 +11,13 @@ __copyright__ = ('Copyright 2012, Australia Indonesia Facility for '
                  'Disaster Reduction')
 
 """
+import pytest
+
 from qgis.core import (
     QgsProviderRegistry,
     QgsCoordinateReferenceSystem,
 )
+from qgis.gui import QgisInterface
 
 
 def test_qgis_environment():
@@ -27,7 +30,7 @@ def test_qgis_environment():
     assert 'postgres' in providers
 
 
-def test_projection():
+def test_projection(qgis_iface: QgisInterface):
     """Test that QGIS properly parses a wkt string.
     """
     crs = QgsCoordinateReferenceSystem()

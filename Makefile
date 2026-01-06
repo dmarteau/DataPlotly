@@ -15,7 +15,7 @@ REQUIREMENTS_GROUPS= \
 
 REQUIREMENTS=$(patsubst %, requirements/%.txt, $(REQUIREMENTS_GROUPS))
 
-update-requirements: $(REQUIREMENS)
+update-requirements: $(REQUIREMENTS)
 
 requirements/%.txt: uv.lock
 	@echo "Updating requirements for '$*'"; \
@@ -67,4 +67,19 @@ coverage: covtest
 	@echo "Building coverage report"
 	@ $(UV_RUN) coverage html
 
+#
+# Tests using docker image
+#
+QGIS_IMAGE_REPOSITORY ?=qgis/qgis
+QGIS_IMAGE_TAG ?= $(QGIS_IMAGE_REPOSITORY):$(QGIS_VERSION)
 
+export QGIS_VERSION
+export QGIS_IMAGE_TAG
+export UID=$(shell id -u)
+export GID=$(shell id -g)
+docker-test:
+	cd .docker && docker compose up \
+		--quiet-pull \
+		--abort-on-container-exit \
+		--exit-code-from qgis
+	cd .docker && docker compose down -v
